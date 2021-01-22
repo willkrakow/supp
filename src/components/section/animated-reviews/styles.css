@@ -1,0 +1,8 @@
+.box {
+    height: 100px;
+    width: 200px;
+    border-radius: 20px;
+    background-color: #0956a7;
+    opacity: 0.8;
+    box-shadow: 10px 10px 20px rgba(0,50,200,0.2);
+}

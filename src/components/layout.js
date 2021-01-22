@@ -12,6 +12,13 @@ import { useStaticQuery, graphql } from "gatsby"
 import Header from "./header"
 import "./layout.css"
 
+import { loadStripe } from '@stripe/stripe-js'
+import { CartProvider } from 'use-shopping-cart'
+
+
+const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY)
+
+
 const Layout = ({ children }) => {
   const data = useStaticQuery(graphql`
     query SiteTitleQuery {
@@ -25,23 +32,26 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: 960,
-          padding: `0 1.0875rem 1.45rem`,
-        }}
+      <CartProvider
+        mode="client-only"
+        stripe={stripePromise}
+        successUrl={`${window.location.origin}/about`}
+        cancelUrl={`${window.location.origin}/404`}
+        currency="USD"
+        allowedCountries={["US", "GB", "CA"]}
+        billingAddressCollection={true}
       >
-        <main>{children}</main>
-        <footer style={{
-          marginTop: `2rem`
-        }}>
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.com">Gatsby</a>
-        </footer>
-      </div>
+        <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
+        <div
+          style={{
+            margin: `0 auto`,
+            maxWidth: `100%`,
+            overflow: `hidden`,
+          }}
+        >
+          <main>{children}</main>
+        </div>
+      </CartProvider>
     </>
   )
 }

@@ -1,16 +1,58 @@
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+})
+
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Default Starter`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    title: `Supp`,
+    description: `Because you should know what you're putting in your body.`,
+    author: `William Krakow`,
   },
   plugins: [
+    {
+      resolve: `gatsby-source-airtable`,
+      options: {
+        apiKey: process.env.AIRTABLE_API_KEY, // may instead specify via env, see below
+        concurrency: 5, // default, see using markdown and attachments for more information
+        tables: [
+          {
+            baseId: `appW3kDrRIV1DDTp3`,
+            tableName: `Supplements`,
+          },
+          {
+            baseId: `appW3kDrRIV1DDTp3`,
+            tableName: `Categories`,
+            queryName: `allAirtableCategories`,
+          },
+          {
+            baseId: `appW3kDrRIV1DDTp3`,
+            tableName: `Pages`,
+            queryName: `allAirtablePages`,
+          },
+        ],
+      },
+    },
     `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `images`,
         path: `${__dirname}/src/images`,
+      },
+    },
+    {
+      resolve: `gatsby-source-stripe`,
+      options: {
+        objects: [
+          "Balance",
+          "BalanceTransaction",
+          "Product",
+          "Charge",
+          "Price"
+        ],
+        secretKey:
+          process.env.STRIPE_SECRET_KEY,
+        downloadFiles: true,
       },
     },
     `gatsby-transformer-sharp`,
@@ -27,6 +69,9 @@ module.exports = {
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
       },
     },
+    "gatsby-plugin-sass",
+    `gatsby-plugin-scroll-reveal`,
+
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
